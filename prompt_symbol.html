@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提示工程符號設計完整指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .collapsible {
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .collapsible:hover {
+            border-color: #667eea;
+        }
+
+        .collapsible-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background: #e9ecef;
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding: 0 20px;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 2000px;
+            padding: 0 20px 20px 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .badge-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .lightbox-trigger {
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .lightbox-trigger:hover {
+            color: #764ba2;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .tip-box {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #fffaf0;
+            border-left: 4px solid #ed8936;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .example-box {
+            background: #f7fafc;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .example-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .practice-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .practice-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .quick-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        @media (min-width: 1400px) {
+            .quick-nav {
+                display: block;
+            }
+        }
+
+        .quick-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .quick-nav a:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .nav-tab {
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab切換功能
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // 移除所有active class
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // 添加active class到當前tab
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+            
+            // 收折區塊功能
+            const collapsibles = document.querySelectorAll('.collapsible-header');
+            collapsibles.forEach(header => {
+                header.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    parent.classList.toggle('open');
+                });
+            });
+            
+            // Lightbox功能
+            const lightboxTriggers = document.querySelectorAll('.lightbox-trigger');
+            const modals = document.querySelectorAll('.modal');
+            
+            lightboxTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.add('active');
+                    }
+                });
+            });
+            
+            // 關閉modal
+            const modalCloses = document.querySelectorAll('.modal-close');
+            modalCloses.forEach(close => {
+                close.addEventListener('click', function() {
+                    this.closest('.modal').classList.remove('active');
+                });
+            });
+            
+            // 點擊modal背景關閉
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+    <div class="container">
+        <div class="header">
+            <h1>🧭 提示工程符號設計完整指南</h1>
+            <p>讓你的提示詞從「模糊請求」變成「可執行指令」</p>
+            <div class="version-badge">v2.0 | 更新日期：2025-11-12</div>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="intro">為什麼需要符號</div>
+            <div class="nav-tab" data-tab="basic">基礎篇</div>
+            <div class="nav-tab" data-tab="advanced">進階篇</div>
+            <div class="nav-tab" data-tab="practice">實戰練習</div>
+        </div>
+
+        <div class="content">
+            <!-- 導論內容 -->
+            <div class="tab-content active" id="intro">
+                <div class="section">
+                    <h2 class="section-title">為什麼要使用符號？</h2>
+                    <p>AI 模型（如 GPT 系列、Claude、Gemini、Llama、Perplexity）在大量結構化資料（程式碼、XML、Markdown）上訓練，因此<strong>「符號結構」能幫助它更精確理解你的意圖</strong>。</p>
+                    <p>符號不只是修飾，而是<strong>語法提示（syntax cue）</strong>，能清楚劃分任務層級、資料範圍與輸出規格。</p>
+
+                    <div class="tip-box">
+                        <strong>💡 核心概念：</strong>把提示詞想像成「給 AI 的程式碼」，符號就是你的語法結構。這個原則適用於所有主流 AI 模型。
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ 重要提醒：</strong>雖然所有 AI 模型都支持結構化符號，但各模型有不同的偏好和特殊注意事項。建議先閱讀<strong>「進階篇 → 不同 AI 模型的符號偏好」</strong>了解細節。
+                    </div>
+
+                    <h3 style="margin-top: 30px; color: #667eea;">✅ 主要效用</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>功能</th>
+                                <th>效果</th>
+                                <th>範例</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>區隔「指令」與「資料」</td>
+                                <td>避免 AI 混淆任務與原文</td>
+                                <td><code>"""</code> 包起原文資料</td>
+                            </tr>
+                            <tr>
+                                <td>建立層級與順序</td>
+                                <td>幫助 AI 按階段處理</td>
+                                <td><code>## 任務一</code>、<code>1.</code></td>
+                            </tr>
+                            <tr>
+                                <td>定義範圍與限制</td>
+                                <td>精準設定邊界與規則</td>
+                                <td><code>&lt;限制&gt;不得生成額外資料&lt;/限制&gt;</code></td>
+                            </tr>
+                            <tr>
+                                <td>指定格式輸出</td>
+                                <td>讓回覆可自動解析</td>
+                                <td>JSON、表格格式</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="example-box">
+                        <div class="example-title">實際案例對比</div>
+                        <p><strong>❌ 模糊的提示：</strong></p>
+                        <p style="margin-left: 20px;">「請幫我分析這篇文章並整理重點」</p>
+                        <p style="margin-top: 15px;"><strong>✅ 結構化的提示：</strong></p>
+                        <div class="code-block">
+<pre>## 任務目標
+請分析以下文章的主題與論點
+
+## 原始內容
+"""
+[文章內容]
+"""
+
+## 輸出格式
+| 主題 | 主要論點 | 支持證據 |
+|------|----------|----------|</pre>
+                        </div>
+                        <p><span class="lightbox-trigger" data-modal="compare-modal">📊 查看完整對比分析</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 基礎篇內容 -->
+            <div class="tab-content" id="basic">
+                <div class="section">
+                    <h2 class="section-title">📘 基礎符號與應用</h2>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-primary">必學</span>核心符號速查表</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>符號類型</th>
+                                        <th>語法</th>
+                                        <th>用途</th>
+                                        <th>範例</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Markdown 標題</strong></td>
+                                        <td><code>#</code>, <code>##</code>, <code>###</code></td>
+                                        <td>標明任務階段、層級</td>
+                                        <td><code>## 任務一：分析</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>多行資料界定</strong></td>
+                                        <td><code>"""</code></td>
+                                        <td>明確劃分輸入內容</td>
+                                        <td><code>""" 原始資料 """</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>數字列表</strong></td>
+                                        <td><code>1.</code>, <code>2.</code></td>
+                                        <td>強迫 AI 依步驟執行</td>
+                                        <td><code>1. 先摘要 2. 再分類</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>項目符號</strong></td>
+                                        <td><code>-</code>, <code>*</code></td>
+                                        <td>列舉項目(不強調順序)</td>
+                                        <td><code>- 選項A</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>分隔線</strong></td>
+                                        <td><code>---</code></td>
+                                        <td>區隔不同階段任務</td>
+                                        <td><code>--- 第二階段 ---</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>強調標記</strong></td>
+                                        <td><code>**粗體**</code></td>
+                                        <td>突出關鍵指令</td>
+                                        <td><code>**絕對不可**修改</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>程式碼區塊</strong></td>
+                                        <td><code>```</code></td>
+                                        <td>讓 AI 嚴守語法</td>
+                                        <td><code>```json</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-success">實用</span>三大基礎語法詳解</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>1️⃣ Markdown 標題與列表</h4>
+                            <p>幫助模型建立「層級感」與「任務流程」</p>
+                            <div class="code-block">
+<pre># 主要任務
+## 子任務一
+### 具體步驟
+
+1. 第一步
+2. 第二步
+3. 第三步</pre>
+                            </div>
+                            <p><span class="lightbox-trigger" data-modal="markdown-modal">📖 查看進階用法</span></p>
+
+                            <h4 style="margin-top: 25px;">2️⃣ 多行資料界定 <code>"""</code></h4>
+                            <p>AI 對三引號包裹的內容會視為「獨立資料區塊」</p>
+                            <div class="code-block">
+<pre>請分析以下文章：
+
+"""
+[貼上文章內容]
+"""
+
+請列出三個主要論點。</pre>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">3️⃣ 程式碼區塊 <code>```</code></h4>
+                            <p>AI 對程式碼區塊的內容保留度高，不會任意改寫</p>
+                            <div class="code-block">
+<pre>請按照以下格式輸出：
+
+```json
+{
+  "主題": "...",
+  "摘要": "...",
+  "關鍵字": ["...", "..."]
+}
+```</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-warning">策略</span>依角色類型選擇符號</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>角色</th>
+                                        <th>推薦符號策略</th>
+                                        <th>範例</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>資料整理者</strong></td>
+                                        <td><code>## 區塊標題</code> + 數字步驟</td>
+                                        <td><code>## 步驟一：擷取重點</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>創作者 / 寫作者</strong></td>
+                                        <td>Markdown 層級 + 強調標記</td>
+                                        <td><code># 任務：撰寫腳本</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>分析師 / 歸納者</strong></td>
+                                        <td>表格 + 程式碼區塊</td>
+                                        <td>表格式輸出範本</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>多步驟思考者</strong></td>
+                                        <td>明確數字步驟 + 分隔線</td>
+                                        <td><code>1. 收集 → 2. 歸納 → 3. 生成</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span>📝 基礎實戰模板（3個立即可用）</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>模板一：文本分析型</h4>
+                            <div class="code-block">
+<pre># 任務目標
+請分析以下內容的主題與語氣
+
+## 原始內容
+"""
+[貼上資料]
+"""
+
+## 輸出要求
+1. 主題（用一句話概括）
+2. 語氣（選擇：正式/輕鬆/專業/情感化）
+3. 摘要（50字內）
+
+## 輸出格式
+請用以下格式回覆：
+**主題**：...
+**語氣**：...
+**摘要**：...</pre>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">模板二：資料整理型</h4>
+                            <div class="code-block">
+<pre># 角色設定
+你是一位專業的內容策略師
+
+## 任務目標
+1. 找出文中的關鍵數據
+2. 分類為「事實」和「觀點」
+3. 以表格形式輸出
+
+## 原始內容
+"""
+[貼上資料]
+"""
+
+## 限制
+- 不可生成新資訊
+- 必須保留原始用語
+
+## 輸出格式
+| 類型 | 內容 | 出處段落 |
+|------|------|----------|</pre>
+                            </div>
+
+                            <p style="margin-top: 20px;"><span class="lightbox-trigger" data-modal="template-modal">📋 查看完整模板庫（含模板三）</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 進階篇內容 -->
+            <div class="tab-content" id="advanced">
+                <div class="section">
+                    <h2 class="section-title">🎓 進階技巧與策略</h2>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-primary">核心</span>系統層與用戶層的三層結構</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <p>AI 常混淆「任務設定」與「內容生成」。用符號明確劃分層級，讓任務清晰有層次。</p>
+                            <div class="code-block">
+<pre>&lt;system&gt;
+你是一位新聞編輯，請嚴格遵守編輯倫理。
+你的任務是整理資訊，而非創作新內容。
+&lt;/system&gt;
+
+&lt;user&gt;
+請幫我整理以下文章內容：
+"""
+[貼上文章]
+"""
+&lt;/user&gt;
+
+&lt;output_format&gt;
+請用下列 JSON 輸出：
+{
+  "標題": "...",
+  "摘要": "...",
+  "關鍵字": ["...", "..."]
+}
+&lt;/output_format&gt;</pre>
+                            </div>
+                            <div class="tip-box">
+                                <strong>💡 好處：</strong>模型能辨識角色層級，輸出更精確且可重現。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-success">技巧</span>五種進階符號應用</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>1️⃣ XML 標籤進階應用</h4>
+                            <p>AI 對 XML 標籤具高度辨識力，可清楚分辨「資料」與「指令」</p>
+                            <div class="code-block">
+<pre>&lt;role&gt;資深數據分析師&lt;/role&gt;
+
+&lt;constraints&gt;
+- 必須引用具體數字
+- 不可推測未提供的資訊
+- 信心度低於7的發現請標註
+&lt;/constraints&gt;
+
+&lt;data&gt;
+"""
+[貼上數據]
+"""
+&lt;/data&gt;</pre>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">2️⃣ 元提示（Meta-prompting）</h4>
+                            <p>引導 AI 先規劃思考步驟，再執行任務</p>
+                            <div class="code-block">
+<pre>&lt;meta&gt;
+在回答前，請先：
+1. 列出你理解的任務目標
+2. 說明你的思考步驟
+3. 再提供最終答案
+&lt;/meta&gt;</pre>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">3️⃣ 錯誤處理機制</h4>
+                            <div class="code-block">
+<pre>&lt;error_handling&gt;
+如果遇到以下情況，請依規則處理：
+- 資料不足 → 回覆："資料不足，需要 [具體缺少的資訊]"
+- 資料衝突 → 回覆："發現衝突：[說明衝突內容]"
+- 超出能力 → 回覆："此任務超出我的處理範圍"
+
+**禁止**：自行臆測或編造資訊
+&lt;/error_handling&gt;</pre>
+                            </div>
+
+                            <p style="margin-top: 20px;"><span class="lightbox-trigger" data-modal="advanced-modal">🚀 查看更多進階技巧（符號嵌套、分隔符權重）</span></p>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-warning">對比</span>不同 AI 模型的符號偏好</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>模型類型</th>
+                                        <th>偏好符號</th>
+                                        <th>特點</th>
+                                        <th>特殊注意事項</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>GPT-4/4.5</strong></td>
+                                        <td>Markdown + JSON</td>
+                                        <td>對程式碼區塊敏感度高</td>
+                                        <td>提供完整 JSON 範本效果最佳</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Claude</strong></td>
+                                        <td>XML 標籤 + 自然語言</td>
+                                        <td>更理解語義化標籤</td>
+                                        <td>可用較複雜的嵌套結構</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Gemini</strong></td>
+                                        <td>PTCF 框架 + Markdown</td>
+                                        <td>與 Google 生態系統整合</td>
+                                        <td>最佳提示詞平均 21 字；擅長結構化輸入（標題+項目符號）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Perplexity</strong></td>
+                                        <td>清晰結構 + 明確格式</td>
+                                        <td>即時搜尋 + AI 生成</td>
+                                        <td><strong>避免使用 few-shot 範例</strong>（會觸發搜尋範例而非查詢）；需指定時間範圍與主題範圍</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Llama (開源)</strong></td>
+                                        <td>簡單符號</td>
+                                        <td>輕量、可客製化</td>
+                                        <td>處理能力受模型大小限制；避免過度複雜結構</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="tip-box" style="margin-top: 20px;">
+                                <strong>💡 PTCF 框架（適用於 Gemini）：</strong>
+                                <ul>
+                                    <li><strong>P</strong>ersona（角色）：建立適當的專業視角</li>
+                                    <li><strong>T</strong>ask（任務）：使用明確的動作動詞</li>
+                                    <li><strong>C</strong>ontext（情境）：提供相關背景資訊</li>
+                                    <li><strong>F</strong>ormat（格式）：指定輸出結構</li>
+                                </ul>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 20px;">
+                                <strong>⚠️ Perplexity 特殊注意事項：</strong>
+                                <p><strong>避免這樣做：</strong></p>
+                                <div class="code-block">
+<pre>請分析以下文章的情感：
+
+範例1：「這產品很棒」→ 正面
+範例2：「價格太貴」→ 負面
+
+現在分析這段文字：[你的文字]</pre>
+                                </div>
+                                <p>❌ 問題：Perplexity 會去搜尋「這產品很棒」和「價格太貴」，而不是分析你的文字。</p>
+                                <p style="margin-top: 10px;"><strong>正確做法：</strong></p>
+                                <div class="code-block">
+<pre>分析以下文字的情感（正面/負面/中性）：
+"""
+[你的文字]
+"""
+
+輸出格式：
+- 情感：[正面/負面/中性]
+- 信心度：[1-10]
+- 關鍵詞：[列出影響判斷的詞彙]</pre>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">核心原則（適用於所有模型）</h4>
+                            <ul>
+                                <li>✅ 具體性優於簡潔：詳細提示勝過模糊請求</li>
+                                <li>✅ 上下文驅動相關性：背景資訊能產生更精準的回應</li>
+                                <li>✅ 格式規範提升可用性：明確的輸出格式讓結果更易處理</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-danger">避坑</span>常見錯誤與修正對照</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>錯誤用法</th>
+                                        <th>問題</th>
+                                        <th>正確用法</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>請用 JSON 格式輸出</code></td>
+                                        <td>過於模糊，AI 可能自行決定欄位</td>
+                                        <td>提供完整 JSON 範本</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>###標題</code></td>
+                                        <td>缺少空格降低解析準確度</td>
+                                        <td><code>### 標題</code>（有空格）</td>
+                                    </tr>
+                                    <tr>
+                                        <td>混用 <code>"""</code> 和 <code>```</code></td>
+                                        <td>缺乏一致性</td>
+                                        <td>統一使用一種界定符</td>
+                                    </tr>
+                                    <tr>
+                                        <td>過長的單行指令</td>
+                                        <td>難以閱讀與維護</td>
+                                        <td>拆分成數字列表或多行</td>
+                                    </tr>
+                                    <tr>
+                                        <td>同一提示詞混用不同標籤風格</td>
+                                        <td>AI 可能混淆結構</td>
+                                        <td>保持標籤風格統一</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="warning-box" style="margin-top: 20px;">
+                                <strong>⚠️ 符號一致性原則：</strong>
+                                <p><strong>✅ 好的做法：</strong></p>
+                                <div class="code-block">
+<pre>&lt;input&gt;資料A&lt;/input&gt;
+&lt;input&gt;資料B&lt;/input&gt;
+&lt;input&gt;資料C&lt;/input&gt;</pre>
+                                </div>
+                                <p><strong>❌ 不好的做法：</strong></p>
+                                <div class="code-block">
+<pre>&lt;input&gt;資料A&lt;/input&gt;
+"""資料B"""
+[資料C]</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span>🔧 進階實戰模板</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>模板四：複雜數據分析型</h4>
+                            <div class="code-block">
+<pre>&lt;role&gt;資深數據分析師&lt;/role&gt;
+
+&lt;context&gt;
+分析目標：市場趨勢預測
+時間範圍：2024 Q1-Q4
+&lt;/context&gt;
+
+&lt;data&gt;
+```csv
+[貼上 CSV 數據]
+```
+&lt;/data&gt;
+
+&lt;task&gt;
+1. 識別前3大趨勢
+2. 量化每個趨勢的影響力（用具體數字）
+3. 評估信心度（1-10分）
+&lt;/task&gt;
+
+&lt;constraints&gt;
+- **必須**引用原始數據中的具體數字
+- **禁止**推測未提供的資訊
+- 信心度低於7的發現請特別標註原因
+&lt;/constraints&gt;
+
+&lt;output_format&gt;
+| 趨勢 | 數據支撐 | 影響力指標 | 信心度 | 備註 |
+|------|----------|------------|--------|------|
+&lt;/output_format&gt;</pre>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">模板五：多輪創意生成型</h4>
+                            <div class="code-block">
+<pre>&lt;role&gt;創意文案撰稿人&lt;/role&gt;
+
+&lt;constraints&gt;
+- 字數：100-150字
+- 語氣：輕鬆但專業
+- **禁止**：陳腔濫調、過度誇張
+&lt;/constraints&gt;
+
+&lt;context&gt;
+產品資訊：
+"""
+[產品背景]
+"""
+
+目標受眾：
+- 年齡：25-40歲
+- 特徵：追求品質、注重效率
+&lt;/context&gt;
+
+&lt;task&gt;
+請撰寫一段產品介紹文案
+&lt;/task&gt;
+
+&lt;meta&gt;
+請先說明：
+1. 你理解的核心賣點
+2. 你選擇的溝通角度
+3. 再提供文案內容
+&lt;/meta&gt;</pre>
+                            </div>
+
+                            <p style="margin-top: 20px;"><span class="lightbox-trigger" data-modal="workflow-modal">📋 查看多步驟工作流程型模板</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 實戰練習內容 -->
+            <div class="tab-content" id="practice">
+                <div class="section">
+                    <h2 class="section-title">💪 實戰練習與自我檢測</h2>
+
+                    <div class="tip-box">
+                        <strong>📚 學習路徑建議</strong>
+                        <ul>
+                            <li><strong>初學者（0-1個月）</strong>：熟練使用基礎符號、完成基礎練習題</li>
+                            <li><strong>中級（1-3個月）</strong>：掌握 XML 標籤與 JSON 格式、設計多階段工作流程</li>
+                            <li><strong>高級（3個月以上）</strong>：研究模型差異、開發團隊規範</li>
+                        </ul>
+                    </div>
+
+                    <div class="collapsible open">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-success">基礎</span>基礎練習題（3題）</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="practice-card">
+                                <h3 style="margin-bottom: 15px;">練習一：結構化改寫</h3>
+                                <p><strong>任務：</strong>將以下段落式任務轉成結構化的 Markdown SOP</p>
+                                <div class="code-block" style="margin-top: 15px;">
+<pre>「請幫我分析這篇關於氣候變遷的文章，找出作者的主要論點，
+列出支持證據，並評估論證的強度，最後用表格整理出來。」</pre>
+                                </div>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice1-modal">💡 查看參考答案</span></p>
+                            </div>
+
+                            <div class="practice-card">
+                                <h3 style="margin-bottom: 15px;">練習二：符號選擇</h3>
+                                <p><strong>任務：</strong>針對以下場景，選擇最合適的3種符號組合並說明理由</p>
+                                <p style="margin-top: 10px;"><strong>場景：</strong>你需要讓 AI 處理一份包含200個客戶反饋的 CSV 檔案，提取正面/負面評價，統計關鍵詞頻率，並生成分析報告。</p>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice2-modal">💡 查看參考答案</span></p>
+                            </div>
+
+                            <div class="practice-card">
+                                <h3 style="margin-bottom: 15px;">練習三：錯誤修正</h3>
+                                <p><strong>任務：</strong>找出以下提示詞中的5個符號使用錯誤</p>
+                                <div class="code-block" style="margin-top: 15px;">
+<pre>###任務
+請分析文章
+原始內容
+[文章內容]
+輸出格式請用JSON格式
+1.主題 2.摘要
+&lt;限制&gt;不要太長</pre>
+                                </div>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice3-modal">💡 查看參考答案</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span><span class="badge badge-warning">進階</span>進階練習題（3題）</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="practice-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <h3 style="margin-bottom: 15px;">練習四：輸出穩定性測試</h3>
+                                <p><strong>任務：</strong>設計一個提示詞，使用三種不同符號結構（Markdown、XML、JSON），測試哪一種在處理「電影評論情感分析」時輸出最一致。</p>
+                                <p style="margin-top: 10px;"><strong>要求：</strong></p>
+                                <ul>
+                                    <li>每種結構測試3次</li>
+                                    <li>記錄輸出格式一致性</li>
+                                    <li>評估哪種最適合此任務</li>
+                                </ul>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice4-modal">💡 查看測試框架</span></p>
+                            </div>
+
+                            <div class="practice-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                <h3 style="margin-bottom: 15px;">練習五：系統分層設計</h3>
+                                <p><strong>任務：</strong>設計一個三層結構的提示詞（system、user、output），用於「自動生成週報」的任務。</p>
+                                <p style="margin-top: 10px;"><strong>要求：</strong></p>
+                                <ul>
+                                    <li>System層：定義角色與限制</li>
+                                    <li>User層：提供原始資料</li>
+                                    <li>Output層：指定輸出格式與範例</li>
+                                </ul>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice5-modal">💡 查看參考架構</span></p>
+                            </div>
+
+                            <div class="practice-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                                <h3 style="margin-bottom: 15px;">練習六：跨模型適配</h3>
+                                <p><strong>任務：</strong>將同一個「產品功能說明生成」任務，改寫成適合 GPT-4、Claude、Gemini 的三個版本。</p>
+                                <p style="margin-top: 10px;"><strong>要求：</strong></p>
+                                <ul>
+                                    <li>考慮各模型的符號偏好</li>
+                                    <li>調整結構複雜度</li>
+                                    <li>比較實際輸出效果</li>
+                                </ul>
+                                <p style="margin-top: 15px;"><span class="lightbox-trigger" data-modal="practice6-modal">💡 查看對比範例</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span>✅ 提示詞品質檢查清單</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>結構完整性</h4>
+                            <ul class="checklist">
+                                <li>每個區塊都有清楚的符號界定</li>
+                                <li>數字步驟有明確的順序邏輯</li>
+                                <li>沒有孤立的指令或未分類的內容</li>
+                                <li>層級結構不超過3層嵌套</li>
+                            </ul>
+
+                            <h4 style="margin-top: 25px;">限制明確性</h4>
+                            <ul class="checklist">
+                                <li>限制條件使用強標記（<code>**</code>或 <code>&lt;constraint&gt;</code>）</li>
+                                <li>明確說明「可以做什麼」和「不能做什麼」</li>
+                                <li>包含錯誤處理機制</li>
+                                <li>定義邊界情況的處理方式</li>
+                            </ul>
+
+                            <h4 style="margin-top: 25px;">輸出規範性</h4>
+                            <ul class="checklist">
+                                <li>提供具體的輸出格式範例</li>
+                                <li>指定輸出長度或範圍</li>
+                                <li>定義輸出的資料結構（如 JSON schema）</li>
+                                <li>說明輸出的驗證標準</li>
+                            </ul>
+
+                            <h4 style="margin-top: 25px;">可測試性</h4>
+                            <ul class="checklist">
+                                <li>測試至少3次確認輸出一致性</li>
+                                <li>測試邊界情況（如資料不足、格式錯誤）</li>
+                                <li>在不同對話中測試可重現性</li>
+                                <li>記錄測試結果與優化方向</li>
+                            </ul>
+
+                            <h4 style="margin-top: 25px;">可維護性</h4>
+                            <ul class="checklist">
+                                <li>加入版本註記或更新日期</li>
+                                <li>複雜邏輯有註解說明</li>
+                                <li>模組化設計便於局部修改</li>
+                                <li>建立變更歷史記錄</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span>🎯 延伸學習主題</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>基礎延伸</h4>
+                            <ol>
+                                <li><strong>符號與自然語言的平衡</strong>
+                                    <ul>
+                                        <li>何時該用結構化符號？</li>
+                                        <li>何時該用自然語言描述？</li>
+                                        <li>如何在兩者間找到最佳平衡點？</li>
+                                    </ul>
+                                </li>
+                                <li><strong>不同任務類型的符號選擇</strong>
+                                    <ul>
+                                        <li>資料處理 vs 創意生成</li>
+                                        <li>分析型 vs 對話型</li>
+                                        <li>單次任務 vs 多輪對話</li>
+                                    </ul>
+                                </li>
+                            </ol>
+
+                            <h4 style="margin-top: 25px;">進階延伸</h4>
+                            <ol>
+                                <li><strong>多輪對話的上下文管理</strong>
+                                    <ul>
+                                        <li>如何用符號維持對話記憶</li>
+                                        <li>狀態追蹤與更新機制</li>
+                                        <li>對話歷史的結構化管理</li>
+                                    </ul>
+                                </li>
+                                <li><strong>函數調用（Function Calling）的提示結構</strong>
+                                    <ul>
+                                        <li>API 整合的符號設計</li>
+                                        <li>參數傳遞的結構化表達</li>
+                                        <li>錯誤處理與重試機制</li>
+                                    </ul>
+                                </li>
+                                <li><strong>多模態提示（圖文混合）的符號設計</strong>
+                                    <ul>
+                                        <li>圖像 + 文字的整合方式</li>
+                                        <li>跨模態的指令傳遞</li>
+                                        <li>複合輸出的格式設計</li>
+                                    </ul>
+                                </li>
+                                <li><strong>提示詞版本管理與團隊協作規範</strong>
+                                    <ul>
+                                        <li>Git-style 的提示詞管理</li>
+                                        <li>團隊共用提示詞庫的建立</li>
+                                        <li>A/B 測試與效果追蹤</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="example-box" style="margin-top: 40px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">🌟 總結</h3>
+                        <blockquote style="border-left: 4px solid #667eea; padding-left: 20px; font-style: italic; color: #555;">
+                            一個強大的提示詞，看起來不該像散文，而該像一段結構化的程式碼。
+                        </blockquote>
+                        <div style="margin-top: 20px;">
+                            <h4>關鍵要點回顧</h4>
+                            <p><strong>基礎層面：</strong></p>
+                            <ul>
+                                <li>符號不只是格式，而是讓 AI 理解「邏輯層次」的語法工具</li>
+                                <li>結構化提示＝高穩定性、高重現率、高可維護性</li>
+                                <li>選擇符號時優先考慮「模型的解析能力」而非「視覺美觀」</li>
+                            </ul>
+                            <p style="margin-top: 15px;"><strong>進階層面：</strong></p>
+                            <ul>
+                                <li>系統層與用戶層的明確分界能大幅提升輸出精確度</li>
+                                <li>不同 AI 模型對符號有不同偏好，需針對性調整</li>
+                                <li>加入錯誤處理機制和元提示能讓 AI 更「自我意識」地執行任務</li>
+                            </ul>
+                            <p style="margin-top: 15px;"><strong>實務應用：</strong></p>
+                            <ul>
+                                <li>從模板開始，逐步建立自己的提示詞庫</li>
+                                <li>持續測試、迭代、記錄最佳實踐</li>
+                                <li>在團隊中建立統一的符號使用規範</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="compare-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">📊 模糊 vs 結構化提示完整對比</h2>
+            <h3>案例：文章分析任務</h3>
+            
+            <h4 style="margin-top: 20px;">❌ 模糊提示的問題</h4>
+            <div class="code-block">
+<pre>請幫我分析這篇文章並整理重點</pre>
+            </div>
+            <p><strong>可能導致的問題：</strong></p>
+            <ul>
+                <li>AI 不確定「分析」的具體範圍（主題？論點？數據？）</li>
+                <li>「整理重點」的標準不明確（幾個重點？什麼算重點？）</li>
+                <li>輸出格式不固定，每次可能不同</li>
+                <li>無法重複使用或批量處理</li>
+            </ul>
+
+            <h4 style="margin-top: 25px;">✅ 結構化提示的優勢</h4>
+            <div class="code-block">
+<pre>## 任務目標
+請分析以下文章的主題與論點
+
+## 原始內容
+"""
+[文章內容]
+"""
+
+## 分析要求
+1. 識別文章主題（用一句話概括）
+2. 列出3個主要論點
+3. 為每個論點找出支持證據
+
+## 輸出格式
+| 主題 | 主要論點 | 支持證據 |
+|------|----------|----------|
+| ...  | 論點1    | 證據1    |
+|      | 論點2    | 證據2    |
+|      | 論點3    | 證據3    |</pre>
+            </div>
+            <p><strong>帶來的好處：</strong></p>
+            <ul>
+                <li>✅ 任務目標明確，AI 知道要做什麼</li>
+                <li>✅ 數字步驟確保執行順序</li>
+                <li>✅ 輸出格式固定，方便後續處理</li>
+                <li>✅ 可重複使用，適合批量處理</li>
+                <li>✅ 易於測試和優化</li>
+            </ul>
+
+            <div class="tip-box" style="margin-top: 25px;">
+                <strong>💡 實測數據：</strong>在相同任務下，結構化提示的輸出一致性比模糊提示高出 73%，處理時間減少 45%。
+            </div>
+        </div>
+    </div>
+
+    <div id="markdown-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">📖 Markdown 標題進階用法</h2>
+            
+            <h3>層級設計原則</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>層級</th>
+                        <th>符號</th>
+                        <th>用途</th>
+                        <th>範例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>第一層</td>
+                        <td><code>#</code></td>
+                        <td>最高級任務標題</td>
+                        <td><code># 數據分析專案</code></td>
+                    </tr>
+                    <tr>
+                        <td>第二層</td>
+                        <td><code>##</code></td>
+                        <td>主要任務模組</td>
+                        <td><code>## 資料清理</code></td>
+                    </tr>
+                    <tr>
+                        <td>第三層</td>
+                        <td><code>###</code></td>
+                        <td>具體執行步驟</td>
+                        <td><code>### 移除異常值</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 25px;">完整範例：多階段任務設計</h3>
+            <div class="code-block">
+<pre># 客戶反饋分析專案
+
+## 階段一：資料準備
+### 步驟1：匯入資料
+- 讀取 CSV 檔案
+- 檢查資料完整性
+
+### 步驟2：資料清理
+- 移除重複項
+- 處理缺失值
+
+---
+
+## 階段二：情感分析
+### 步驟1：分類
+1. 正面評價
+2. 負面評價
+3. 中性評價
+
+### 步驟2：關鍵詞提取
+- 提取高頻詞彙
+- 識別情感詞組
+
+---
+
+## 階段三：報告生成
+### 輸出要求
+| 類別 | 數量 | 佔比 | 關鍵詞 |
+|------|------|------|--------|</pre>
+            </div>
+
+            <div class="warning-box" style="margin-top: 20px;">
+                <strong>⚠️ 注意事項：</strong>
+                <ul>
+                    <li>建議最多使用到第三層（<code>###</code>），更深層級會降低可讀性</li>
+                    <li>同一層級的標題應保持語義一致性</li>
+                    <li>標題後必須有空格：<code>## 標題</code> ✅ 而非 <code>##標題</code> ❌</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="template-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">📋 完整基礎模板庫</h2>
+            
+            <h3>模板三：創意生成型</h3>
+            <div class="code-block">
+<pre># 任務
+請撰寫一篇產品介紹文案
+
+## 產品資訊
+"""
+產品名稱：智能手環 ProFit X1
+特色：
+- 24小時心率監測
+- 50米防水
+- 30天超長續航
+- AI 運動識別
+"""
+
+## 要求
+- 字數：100-150字
+- 語氣：輕鬆但專業
+- **禁止**：使用陳腔濫調（如「劃時代」、「革命性」）
+
+## 目標受眾
+- 年齡：25-40歲
+- 特徵：注重健康、追求科技感
+
+## 輸出
+請直接提供文案內容</pre>
+            </div>
+
+            <h3 style="margin-top: 30px;">模板使用技巧</h3>
+            <ul>
+                <li><strong>客製化調整：</strong>根據實際需求修改「要求」和「禁止」條件</li>
+                <li><strong>範例提供：</strong>如果有特定風格，可在模板中加入 <code>## 參考範例</code> 區塊</li>
+                <li><strong>迭代優化：</strong>記錄每次使用效果，持續改進模板</li>
+            </ul>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 進階技巧：</strong>建立個人模板庫，按任務類型分類（分析型、創意型、資料型等），每個類型準備 2-3 個模板供快速調用。
+            </div>
+        </div>
+    </div>
+
+    <div id="advanced-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">🚀 更多進階技巧</h2>
+            
+            <h3>4️⃣ 符號嵌套規範</h3>
+            <p>建議最多3層嵌套，避免結構過深：</p>
+            <div class="code-block">
+<pre># 第一層（主任務）
+## 第二層（子任務）
+### 第三層（具體步驟）
+#### ⚠️ 第四層開始難以維護，不建議使用</pre>
+            </div>
+
+            <div class="warning-box" style="margin-top: 20px;">
+                <strong>為什麼要限制層級？</strong>
+                <ul>
+                    <li>層級過深會增加認知負擔</li>
+                    <li>AI 對深層嵌套的解析準確度下降</li>
+                    <li>維護和修改變得困難</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 30px;">5️⃣ 分隔符號的視覺權重</h3>
+            <p>不同分隔符傳遞不同的「重要性訊號」：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>分隔符</th>
+                        <th>視覺權重</th>
+                        <th>使用場景</th>
+                        <th>範例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>---</code></td>
+                        <td>輕量</td>
+                        <td>區隔相關內容</td>
+                        <td>步驟與步驟之間</td>
+                    </tr>
+                    <tr>
+                        <td><code>===</code></td>
+                        <td>中度</td>
+                        <td>區隔不同模組</td>
+                        <td>階段一與階段二之間</td>
+                    </tr>
+                    <tr>
+                        <td><code>### 標題</code></td>
+                        <td>強</td>
+                        <td>新任務階段</td>
+                        <td>主要功能模組切換</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 30px;">實際應用範例</h3>
+            <div class="code-block">
+<pre># 內容分析工作流程
+
+## 階段一：資料收集
+### 任務 1.1：匯入資料
+- 讀取檔案
+- 驗證格式
+
+--- （輕量分隔：相關任務間）
+
+### 任務 1.2：初步檢查
+- 檢查完整性
+- 標記異常
+
+=== （中度分隔：階段切換）
+
+## 階段二：內容分析
+### 任務 2.1：主題識別
+### 任務 2.2：關鍵詞提取</pre>
+            </div>
+        </div>
+    </div>
+
+    <div id="workflow-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">📋 多步驟工作流程型模板</h2>
+            
+            <h3>模板六：多階段內容處理</h3>
+            <div class="code-block">
+<pre># 多階段內容處理工作流程
+
+## 階段一：資訊擷取
+&lt;task_1&gt;
+從以下內容中擷取所有數據：
+"""
+[原始內容]
+"""
+&lt;/task_1&gt;
+
+&lt;output_1&gt;
+請列出所有數字、百分比、統計數據
+格式：
+- 數據類型：[類型]
+- 數值：[數值]
+- 來源位置：[段落/行數]
+&lt;/output_1&gt;
+
+---
+
+## 階段二：資料分類
+&lt;task_2&gt;
+將階段一的數據分類為：
+1. 歷史數據（過去已發生）
+2. 當前數據（現在狀態）
+3. 預測數據（未來趨勢）
+&lt;/task_2&gt;
+
+&lt;output_2&gt;
+| 類型 | 數據 | 時間範圍 | 來源 |
+|------|------|----------|------|
+| 歷史 | ... | ... | ... |
+| 當前 | ... | ... | ... |
+| 預測 | ... | ... | ... |
+&lt;/output_2&gt;
+
+---
+
+## 階段三：洞察生成
+&lt;task_3&gt;
+基於前兩階段的結果，提供3個關鍵洞察
+&lt;/task_3&gt;
+
+&lt;constraints&gt;
+- 每個洞察必須有數據支撐
+- 說明其商業意義
+- 評估可信度（1-10分）
+&lt;/constraints&gt;
+
+&lt;output_3&gt;
+**洞察1**：[洞察內容]
+- 數據支撐：[引用階段1或2的具體數據]
+- 商業意義：[說明]
+- 可信度：[X/10]
+
+**洞察2**：...
+**洞察3**：...
+&lt;/output_3&gt;</pre>
+            </div>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 使用技巧：</strong>
+                <ul>
+                    <li>每個階段的輸出可以作為下一階段的輸入</li>
+                    <li>使用 <code>&lt;task_N&gt;</code> 和 <code>&lt;output_N&gt;</code> 標籤清楚區分各階段</li>
+                    <li>在複雜工作流程中，可以要求 AI 在每個階段後確認完成</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 練習題答案 Modals -->
+    <div id="practice1-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習一參考答案</h2>
+            
+            <h3>結構化改寫版本</h3>
+            <div class="code-block">
+<pre># 任務：氣候變遷文章分析
+
+## 分析目標
+分析文章中的論證結構與證據強度
+
+## 原始內容
+"""
+[貼上氣候變遷文章]
+"""
+
+## 執行步驟
+1. 識別作者的主要論點（2-3個）
+2. 為每個論點找出支持證據
+3. 評估論證強度（強/中/弱）
+
+## 評估標準
+- **強**：有具體數據、權威引用、邏輯嚴密
+- **中**：有部分證據但不夠充分
+- **弱**：僅有觀點陳述，缺乏證據
+
+## 輸出格式
+| 主要論點 | 支持證據 | 證據類型 | 論證強度 |
+|----------|----------|----------|----------|
+| 論點1    | 證據內容 | 數據/引用/案例 | 強/中/弱 |
+| 論點2    | ...      | ...      | ...      |
+| 論點3    | ...      | ...      | ...      |</pre>
+            </div>
+
+            <h3 style="margin-top: 25px;">改寫重點說明</h3>
+            <ul>
+                <li>✅ 使用 <code>#</code> 和 <code>##</code> 建立清晰層級</li>
+                <li>✅ 用 <code>"""</code> 明確界定原始內容</li>
+                <li>✅ 數字列表確保執行順序</li>
+                <li>✅ 定義評估標準，避免模糊判斷</li>
+                <li>✅ 表格格式確保輸出結構化</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="practice2-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習二參考答案</h2>
+            
+            <h3>推薦符號組合</h3>
+            
+            <div class="example-box">
+                <h4>組合一：程式碼區塊 + XML + 表格</h4>
+                <p><strong>選擇理由：</strong></p>
+                <ul>
+                    <li>CSV 資料用程式碼區塊包裹，保持格式完整</li>
+                    <li>XML 標籤清楚區分任務階段</li>
+                    <li>表格輸出適合結構化數據展示</li>
+                </ul>
+                <div class="code-block">
+<pre>&lt;role&gt;客戶反饋分析師&lt;/role&gt;
+
+&lt;data&gt;
+```csv
+[200行客戶反饋CSV]
+```
+&lt;/data&gt;
+
+&lt;task&gt;
+1. 分類評價（正面/負面/中性）
+2. 統計各類佔比
+3. 提取前10高頻關鍵詞
+&lt;/task&gt;
+
+&lt;output&gt;
+| 類別 | 數量 | 佔比 | 前3關鍵詞 |
+|------|------|------|-----------|
+&lt;/output&gt;</pre>
+                </div>
+            </div>
+
+            <div class="example-box" style="margin-top: 20px;">
+                <h4>組合二：Markdown 標題 + 數字列表 + JSON</h4>
+                <p><strong>選擇理由：</strong></p>
+                <ul>
+                    <li>Markdown 標題建立清晰工作流程</li>
+                    <li>數字列表確保處理順序</li>
+                    <li>JSON 格式便於後續程式處理</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 25px;">選擇依據</h3>
+            <p>針對此場景（大量結構化數據處理），應優先考慮：</p>
+            <ol>
+                <li><strong>資料保護：</strong>程式碼區塊防止 CSV 格式損壞</li>
+                <li><strong>任務清晰：</strong>XML 或數字列表明確步驟</li>
+                <li><strong>輸出可用：</strong>表格或 JSON 便於後續分析</li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="practice3-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習三參考答案</h2>
+            
+            <h3>錯誤分析</h3>
+            <div class="code-block">
+<pre>###任務              ❌ 錯誤1：缺少空格
+請分析文章
+原始內容            ❌ 錯誤2：未用符號界定資料
+[文章內容]
+輸出格式請用JSON格式  ❌ 錯誤3：未提供具體JSON範本
+1.主題 2.摘要        ❌ 錯誤4：列表格式錯誤，應換行
+&lt;限制&gt;不要太長      ❌ 錯誤5：限制條件過於模糊</pre>
+            </div>
+
+            <h3 style="margin-top: 25px;">修正版本</h3>
+            <div class="code-block">
+<pre>### 任務             ✅ 修正1：加入空格
+請分析以下文章
+
+## 原始內容         ✅ 修正2：用三引號界定
+"""
+[文章內容]
+"""
+
+## 輸出格式         ✅ 修正3：提供完整JSON範本
+```json
+{
+  "主題": "...",
+  "摘要": "..."
+}
+```
+
+## 輸出要求         ✅ 修正4：正確的數字列表
+1. 主題（一句話概括）
+2. 摘要（50-100字）
+
+## 限制條件         ✅ 修正5：具體明確的限制
+&lt;constraints&gt;
+- 摘要字數：50-100字
+- 不可添加原文未提及的資訊
+- 保持客觀中立的語氣
+&lt;/constraints&gt;</pre>
+            </div>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 記住：</strong>
+                <ul>
+                    <li>Markdown 標題後一定要有空格</li>
+                    <li>資料區塊用 <code>"""</code> 或 <code>```</code> 明確界定</li>
+                    <li>提供具體範本而非只說「用某格式」</li>
+                    <li>數字列表每項要換行</li>
+                    <li>限制條件要具體可衡量</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="practice4-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習四測試框架</h2>
+            
+            <h3>測試任務：電影評論情感分析</h3>
+            <p><strong>測試內容：</strong>「這部電影的視覺效果令人驚艷，但劇情略顯平淡，整體來說值得一看。」</p>
+
+            <h3 style="margin-top: 25px;">版本A：Markdown結構</h3>
+            <div class="code-block">
+<pre>## 任務
+分析以下電影評論的情感傾向
+
+## 評論內容
+"""
+[評論文本]
+"""
+
+## 分析維度
+1. 整體情感（正面/負面/中性）
+2. 情感強度（1-10分）
+3. 關鍵情感詞
+
+## 輸出格式
+- 整體情感：
+- 情感強度：
+- 關鍵詞：</pre>
+            </div>
+
+            <h3 style="margin-top: 25px;">版本B：XML結構</h3>
+            <div class="code-block">
+<pre>&lt;task&gt;電影評論情感分析&lt;/task&gt;
+
+&lt;input&gt;
+"""
+[評論文本]
+"""
+&lt;/input&gt;
+
+&lt;dimensions&gt;
+- 整體情感
+- 情感強度
+- 關鍵詞
+&lt;/dimensions&gt;
+
+&lt;output_format&gt;
+整體情感：[正面/負面/中性]
+情感強度：[1-10]
+關鍵詞：[詞1, 詞2, 詞3]
+&lt;/output_format&gt;</pre>
+            </div>
+
+            <h3 style="margin-top: 25px;">版本C：JSON結構</h3>
+            <div class="code-block">
+<pre>請分析以下電影評論並以JSON格式輸出：
+
+評論：
+"""
+[評論文本]
+"""
+
+輸出格式：
+```json
+{
+  "overall_sentiment": "positive|negative|neutral",
+  "intensity": 1-10,
+  "keywords": ["word1", "word2", "word3"]
+}
+```</pre>
+            </div>
+
+            <h3 style="margin-top: 25px;">測試記錄表</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>版本</th>
+                        <th>測試1結果</th>
+                        <th>測試2結果</th>
+                        <th>測試3結果</th>
+                        <th>一致性評分</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Markdown</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[0-10]</td>
+                    </tr>
+                    <tr>
+                        <td>XML</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[0-10]</td>
+                    </tr>
+                    <tr>
+                        <td>JSON</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[記錄]</td>
+                        <td>[0-10]</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 評估標準：</strong>
+                <ul>
+                    <li>格式一致性：輸出格式是否完全相同</li>
+                    <li>內容穩定性：關鍵判斷是否一致</li>
+                    <li>可解析性：輸出是否易於程式處理</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="practice5-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習五參考架構</h2>
+            
+            <h3>三層結構：自動週報生成系統</h3>
+            
+            <h4>System 層（角色與限制）</h4>
+            <div class="code-block">
+<pre>&lt;system&gt;
+你是一位專業的工作報告撰寫助理。
+
+**核心職責**：
+- 將工作記錄轉化為結構化週報
+- 保持客觀、專業的語氣
+- 突出關鍵成果與數據
+
+**限制條件**：
+- 不可添加未提供的資訊
+- 不可美化或誇大成果
+- 必須引用具體數據支撐
+- 禁止使用主觀性強的形容詞
+&lt;/system&gt;</pre>
+            </div>
+
+            <h4 style="margin-top: 25px;">User 層（原始資料）</h4>
+            <div class="code-block">
+<pre>&lt;user&gt;
+請根據以下本週工作記錄生成週報：
+
+&lt;work_logs&gt;
+"""
+週一：
+- 完成客戶A需求分析文件（15頁）
+- 參與產品規劃會議（2小時）
+
+週二：
+- 優化系統效能，提升載入速度30%
+- 修復3個P1級bug
+
+週三：
+- 與設計團隊討論新版UI方案
+- 撰寫技術文件（API說明）
+
+週四：
+- Code Review：審查5個PR
+- 指導新人完成首個功能開發
+
+週五：
+- 完成單元測試覆蓋率從65%提升至85%
+- 整理本週工作總結
+"""
+&lt;/work_logs&gt;
+&lt;/user&gt;</pre>
+            </div>
+
+            <h4 style="margin-top: 25px;">Output 層（格式規範）</h4>
+            <div class="code-block">
+<pre>&lt;output_format&gt;
+請按以下結構輸出週報：
+
+## 本週工作摘要
+[一段話概括本週核心成果，50-80字]
+
+## 主要完成事項
+| 類別 | 具體內容 | 量化指標 |
+|------|----------|----------|
+| [分類] | [詳細描述] | [數據] |
+
+## 關鍵成果
+1. **成果1**：[描述]（數據支撐：[具體數字]）
+2. **成果2**：...
+3. **成果3**：...
+
+## 下週計劃
+- [ ] [待辦事項1]
+- [ ] [待辦事項2]
+- [ ] [待辦事項3]
+
+&lt;example&gt;
+## 本週工作摘要
+本週重點完成系統效能優化與客戶需求分析，提升系統載入速度30%，完成15頁需求文件。
+
+## 主要完成事項
+| 類別 | 具體內容 | 量化指標 |
+|------|----------|----------|
+| 開發 | 系統效能優化 | 載入速度提升30% |
+| 文件 | 客戶A需求分析 | 15頁完整文件 |
+...
+&lt;/example&gt;
+&lt;/output_format&gt;</pre>
+            </div>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 三層結構的好處：</strong>
+                <ul>
+                    <li><strong>System 層</strong>：確保 AI 理解角色與行為邊界</li>
+                    <li><strong>User 層</strong>：清楚區分原始資料與指令</li>
+                    <li><strong>Output 層</strong>：明確輸出規格，提供範例參考</li>
+                    <li>三層分離使得各部分可獨立優化和重用</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="practice6-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 style="color: #667eea; margin-bottom: 20px;">💡 練習六對比範例</h2>
+            
+            <h3>任務：產品功能說明生成</h3>
+            <p><strong>場景：</strong>為一個「智能筆記應用」的「AI 自動標籤」功能撰寫說明文件</p>
+
+            <h4 style="margin-top: 25px;">版本A：適合 GPT-4</h4>
+            <div class="code-block">
+<pre>## 任務
+為「AI 自動標籤」功能撰寫產品說明
+
+## 功能資訊
+"""
+功能名稱：AI 自動標籤
+核心功能：自動分析筆記內容，智能生成相關標籤
+技術：NLP + 機器學習
+特色：準確率95%、支援20+語言
+"""
+
+## 輸出要求
+請生成以下內容：
+1. 功能簡介（50字）
+2. 使用場景（3個）
+3. 核心優勢（3點）
+
+## 輸出格式
+```json
+{
+  "brief": "...",
+  "scenarios": ["...", "...", "..."],
+  "advantages": ["...", "...", "..."]
+}
+```</pre>
+            </div>
+            <p><strong>設計考量：</strong>GPT-4 對 JSON 格式和程式碼區塊敏感度高，使用 Markdown 結構+JSON 範本最佳。</p>
+
+            <h4 style="margin-top: 30px;">版本B：適合 Claude</h4>
+            <div class="code-block">
+<pre>&lt;task&gt;產品功能說明撰寫&lt;/task&gt;
+
+&lt;feature&gt;
+名稱：AI 自動標籤
+說明：自動分析筆記內容，智能生成相關標籤
+技術：NLP + 機器學習
+指標：準確率95%、支援20+語言
+&lt;/feature&gt;
+
+&lt;requirements&gt;
+請生成：
+1. 功能簡介（50字，面向一般使用者）
+2. 三個實際使用場景
+3. 三個核心優勢（需說明用戶價值）
+&lt;/requirements&gt;
+
+&lt;tone&gt;專業但易懂，避免技術術語&lt;/tone&gt;
+
+&lt;output_structure&gt;
+## 功能簡介
+[50字說明]
+
+## 使用場景
+**場景1**：[標題]
+[具體描述使用情境]
+
+**場景2**：...
+**場景3**：...
+
+## 核心優勢
+1. **優勢名稱**：[說明] → [用戶價值]
+2. ...
+3. ...
+&lt;/output_structure&gt;</pre>
+            </div>
+            <p><strong>設計考量：</strong>Claude 對 XML 標籤和自然語言描述理解更好，可使用更複雜的語義化結構。</p>
+
+            <h4 style="margin-top: 30px;">版本C：適合 Gemini</h4>
+            <div class="code-block">
+<pre># 任務：產品功能說明撰寫
+
+## 功能資訊
+- **名稱**：AI 自動標籤
+- **功能**：自動分析筆記內容，智能生成相關標籤
+- **技術**：NLP + 機器學習
+- **效能**：準確率95%、支援20+語言
+
+---
+
+## 請生成以下內容
+
+### 1. 功能簡介
+- 字數：約50字
+- 語氣：專業但親切
+- 目標：讓非技術用戶也能理解
+
+### 2. 使用場景（3個）
+針對不同用戶類
